@@ -2,7 +2,7 @@
 import Image from 'next/image';
 
 import { SignUpForm3 } from "@/components/signup3-form"
-
+export const runtime = "edge";
 export default function SignUpPage2() {
   return (
 

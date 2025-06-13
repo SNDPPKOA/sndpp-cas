@@ -50,7 +50,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { notFound } from "next/navigation";
 import { UserProfile } from "./memberUserEdit";
-
+export const runtime = "edge";
 interface Params {
   params: { id: string };
 }

@@ -1,7 +1,7 @@
 import { UserSideBar } from "@/components/userSideBar";
 import DataPeopleUser from "./dataUserPeople";
 
-
+export const runtime = "edge";
 
 export default async function UserMemberPage() {
   return (

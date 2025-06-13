@@ -1,6 +1,6 @@
 
 import InactiveMembersPage from "./inactiveMembers";
-
+export const runtime = "edge";
 export default async function Inactive() {
 
   return (

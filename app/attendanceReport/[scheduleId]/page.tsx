@@ -116,7 +116,7 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { useParams } from "next/navigation";
 import type { People } from "./columns"; // ✅ Reuse shared type
-
+export const runtime = "edge";
 interface AttendanceResponse {
   firstName: string;
   lastName: string;

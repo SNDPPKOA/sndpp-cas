@@ -1,6 +1,6 @@
 import DataPeople from "./dataBirthday";
 import NextMonthBirthday from "./nextMonthBirthday";
-
+export const runtime = "edge";
 export default async function Birthday() {
 
   return (

@@ -1,5 +1,7 @@
 import { AttendanceList } from "@/components/attendanceList";
 
+export const runtime = "edge";
+
 export default async function Attendance() {
   return (
     <div className="container mx-auto py-10">

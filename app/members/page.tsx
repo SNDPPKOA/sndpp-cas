@@ -1,5 +1,5 @@
 import DataPeople from "./dataPeople";
-
+export const runtime = "edge";
 export default async function DemoPage() {
 
   return (

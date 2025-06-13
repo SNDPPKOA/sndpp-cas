@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { BackMember } from "@/components/ui/back-to-member";
 import { UserSideBar } from "@/components/userSideBar";
-
+export const runtime = "edge";
 export default function VesselsVestments() {
   const liturgicalBooks = [
     {

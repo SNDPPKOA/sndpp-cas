@@ -1,6 +1,6 @@
 import { AttendanceListOfficers } from "@/components/attendanceListOfficers";
 import { Logout } from "@/components/ui/lougoutButton";
-
+export const runtime = "edge";
 export default async function AttendanceOfficers() {
   return (
     <div className="container mx-auto py-10">
