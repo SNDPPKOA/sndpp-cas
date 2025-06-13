@@ -1,7 +1,4 @@
 
-
-
-
 "use client"
 
 import {
@@ -27,21 +24,39 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import React from "react"
-import { useRouter } from "next/navigation"
 import { doc, updateDoc, deleteField } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
 // Ensure TData includes an id field
+
 interface DataTableProps<
   TData extends { id: string; firstName: string; lastName: string },
   TValue
-> {
+> 
+{
   data: TData[]
-  columns: any
+  columns: ColumnDef<TData, TValue>[]
   scheduleId: string
   attendanceStates: Record<string, number>
   setAttendanceStates: React.Dispatch<React.SetStateAction<Record<string, number>>>
 }
+
+// interface DataTableProps<
+//   TData extends { id: string; firstName: string; lastName: string },
+//   TValue
+// > 
+// {
+//   data: TData[]
+//   columns: ColumnDef<TData, TValue>[]
+//   scheduleId: string
+//   attendanceStates: Record<string, number>
+//   setAttendanceStates: React.Dispatch<React.SetStateAction<Record<string, number>>>
+// }
+
+// // interface DataTableProps<TData extends { id: string }, TValue> {
+// //   columns: ColumnDef<TData, TValue>[]
+// //   data: TData[]
+// // }
 
 export function DataTable<
   TData extends { id: string; firstName: string; lastName: string },
@@ -53,7 +68,7 @@ export function DataTable<
   attendanceStates,
   setAttendanceStates,
 }: DataTableProps<TData, TValue>) {
-  const router = useRouter()
+ 
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])

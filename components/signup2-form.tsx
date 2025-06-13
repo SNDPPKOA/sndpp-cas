@@ -2,10 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/ui/label";
-import { Check } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -13,12 +12,7 @@ export function SignUpForm2({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
-  const startYear = 1998;
-  const endYear = new Date().getFullYear();
-  const years = Array.from(
-    { length: endYear - startYear + 1 },
-    (_, i) => startYear + i
-  );
+
 
   const router = useRouter();
   const [form, setForm] = useState({

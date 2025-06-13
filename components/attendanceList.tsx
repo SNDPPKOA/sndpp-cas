@@ -8,6 +8,7 @@
 //   updateDoc,
 //   doc,
 //   DocumentData,
+//   deleteDoc,
 // } from "firebase/firestore";
 // import { db } from "@/lib/firebase";
 // import {
@@ -18,9 +19,9 @@
 // } from "@/components/ui/dialog";
 // import { Button } from "@/components/ui/button";
 // import { Label } from "@/components/ui/label";
-// import { Card, CardDescription, CardTitle } from "./ui/card";
+// import { Card, CardTitle } from "./ui/card";
 // import { useRouter } from "next/navigation";
-// import { Edit, Plus } from "lucide-react";
+// import { Edit, Plus, Delete } from "lucide-react";
 // import { Calendar } from "@/components/ui/calendar";
 
 // type AttendanceData = {
@@ -77,9 +78,11 @@
 //     const scheduleDateObj = new Date(schedule.scheduleDate);
 //     if (isNaN(scheduleDateObj.getTime())) return false;
 
+//     // Match full date: year, month, and day
 //     return (
 //       scheduleDateObj.getFullYear() === date?.getFullYear() &&
-//       scheduleDateObj.getMonth() === date?.getMonth()
+//       scheduleDateObj.getMonth() === date?.getMonth() &&
+//       scheduleDateObj.getDate() === date?.getDate()
 //     );
 //   });
 
@@ -125,6 +128,21 @@
 //     setDialogOpen(true);
 //   };
 
+//   const [, setLoading] = useState(false); // <-- Add this line
+
+//   const handleDeleteSchedule = async (scheduleId: string) => {
+//     setLoading(true); // ← make sure useState for loading is defined
+//     try {
+//       await deleteDoc(doc(db, "attendance", scheduleId));
+//       setSchedules((prev) => prev.filter((s) => s.id !== scheduleId));
+//       alert("Schedule deleted.");
+//     } catch (error) {
+//       console.error("Failed to delete schedule:", error);
+//       alert("Failed to delete schedule.");
+//     }
+//     setLoading(false);
+//   };
+
 //   // Open dialog for adding new schedule
 //   const handleAddNewClick = () => {
 //     setEditingSchedule(null);
@@ -150,6 +168,19 @@
 //       </div>
 
 //       <div className="flex-1">
+//         {date ? (
+//           <h1 className="font-bold text-2xl mb-4">
+//             {date.toLocaleDateString("en-US", {
+//               weekday: "long",
+//               year: "numeric",
+//               month: "long",
+//               day: "numeric",
+//             })}
+//           </h1>
+//         ) : (
+//           <h1 className="font-bold text-2xl mb-4">No date selected</h1>
+//         )}
+
 //         <div className="mb-4">
 //           <Button onClick={handleAddNewClick}>
 //             <Plus className="w-4 h-4 mr-1" /> Add Schedule
@@ -169,32 +200,45 @@
 //                 <div>
 //                   <p className="text-sm font-bold">{schedule.scheduleName}</p>
 //                   <p className="text-sm font-bold">
-//                     {new Date(schedule.scheduleDate).toLocaleDateString("en-US", {
-//                       year: "numeric",
-//                       month: "long",
-//                       day: "numeric",
-//                     })}
+//                     {new Date(schedule.scheduleDate).toLocaleDateString(
+//                       "en-US",
+//                       {
+//                         year: "numeric",
+//                         month: "long",
+//                         day: "numeric",
+//                       }
+//                     )}
 //                   </p>
 //                 </div>
-//                 <Button
-//                   size="sm"
-//                   onClick={(e) => {
-//                     e.stopPropagation();
-//                     handleEditClick(schedule);
-//                   }}
-//                 >
-//                   <Edit className="w-4 h-4" /> Edit
-//                 </Button>
+
+//                 <div className="flex gap-4">
+//                   <Button
+//                   className="font-sm"
+//                     size="sm"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       handleEditClick(schedule);
+//                     }}
+//                   >
+//                     <Edit className="w-4 h-4" /> Edit
+//                   </Button>
+
+//                   <Button
+//                     className="bg-red-400"
+//                     size="sm"
+//                     onClick={(e) => {
+//                       e.stopPropagation(); // Prevent navigation
+//                       schedule.id && handleDeleteSchedule(schedule.id);
+//                     }}
+//                   >
+//                     <Delete className="w-4 h-4" /> Delete
+//                   </Button>
+//                 </div>
 //               </CardTitle>
-//               <CardDescription className="mt-2">
-//                 {schedule.description}
-//               </CardDescription>
 //             </Card>
 //           ))
 //         ) : (
-//           <p className="text-center text-muted-foreground">
-//             No schedules for this month.
-//           </p>
+//           <p>No schedules found for this date.</p>
 //         )}
 
 //         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -269,8 +313,8 @@ import {
   getDocs,
   updateDoc,
   doc,
-  DocumentData,
   deleteDoc,
+  DocumentData,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import {
@@ -281,11 +325,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Card, CardDescription, CardTitle } from "./ui/card";
+import { Card, CardTitle } from "./ui/card";
 import { useRouter } from "next/navigation";
 import { Edit, Plus, Delete } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import Attendance from "@/app/attendance/page";
 
 type AttendanceData = {
   id?: string;
@@ -306,13 +349,11 @@ export function AttendanceList() {
     null
   );
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [, setLoading] = useState(false);
 
   const router = useRouter();
 
-  // Selected date defaults to today
-  const [date, setDate] = useState<Date | undefined>(new Date());
-
-  // Fetch schedules from Firestore
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
@@ -335,13 +376,11 @@ export function AttendanceList() {
     fetchSchedules();
   }, []);
 
-  // Filter schedules by selected month and year
   const filteredSchedules = schedules.filter((schedule) => {
     if (!schedule.scheduleDate) return false;
     const scheduleDateObj = new Date(schedule.scheduleDate);
     if (isNaN(scheduleDateObj.getTime())) return false;
 
-    // Match full date: year, month, and day
     return (
       scheduleDateObj.getFullYear() === date?.getFullYear() &&
       scheduleDateObj.getMonth() === date?.getMonth() &&
@@ -349,7 +388,6 @@ export function AttendanceList() {
     );
   });
 
-  // Handle form submission (add or update)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -360,7 +398,6 @@ export function AttendanceList() {
 
     try {
       if (editingSchedule?.id) {
-        // Update existing schedule
         const docRef = doc(db, "attendance", editingSchedule.id);
         await updateDoc(docRef, form);
 
@@ -369,7 +406,6 @@ export function AttendanceList() {
         );
         alert("Schedule updated successfully");
       } else {
-        // Add new schedule
         const docRef = await addDoc(collection(db, "attendance"), form);
         setSchedules((prev) => [...prev, { ...form, id: docRef.id }]);
         alert("Schedule added successfully");
@@ -384,17 +420,14 @@ export function AttendanceList() {
     }
   };
 
-  // Open dialog for editing schedule
   const handleEditClick = (schedule: AttendanceData) => {
     setEditingSchedule(schedule);
     setForm(schedule);
     setDialogOpen(true);
   };
 
-  const [loading, setLoading] = useState(false); // <-- Add this line
-
   const handleDeleteSchedule = async (scheduleId: string) => {
-    setLoading(true); // ← make sure useState for loading is defined
+    setLoading(true);
     try {
       await deleteDoc(doc(db, "attendance", scheduleId));
       setSchedules((prev) => prev.filter((s) => s.id !== scheduleId));
@@ -406,14 +439,12 @@ export function AttendanceList() {
     setLoading(false);
   };
 
-  // Open dialog for adding new schedule
   const handleAddNewClick = () => {
     setEditingSchedule(null);
     setForm({ scheduleName: "", scheduleDate: "", description: "" });
     setDialogOpen(true);
   };
 
-  // Update calendar view when month changes
   const handleMonthChange = (newMonth: Date) => {
     setDate(newMonth);
   };
@@ -425,7 +456,7 @@ export function AttendanceList() {
           mode="single"
           selected={date}
           onSelect={setDate}
-          onMonthChange={handleMonthChange} // Month change handler
+          onMonthChange={handleMonthChange}
           className="rounded-md border flex-1"
         />
       </div>
@@ -455,9 +486,11 @@ export function AttendanceList() {
             <Card
               key={schedule.id}
               className="mb-4 p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-              onClick={() =>
-                schedule.id && router.push(`/attendance/${schedule.id}`)
-              }
+              onClick={() => {
+                if (schedule.id) {
+                  router.push(`/attendance/${schedule.id}`);
+                }
+              }}
             >
               <CardTitle className="flex justify-between items-center">
                 <div>
@@ -476,7 +509,7 @@ export function AttendanceList() {
 
                 <div className="flex gap-4">
                   <Button
-                  className="font-sm"
+                    className="font-sm"
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -490,8 +523,10 @@ export function AttendanceList() {
                     className="bg-red-400"
                     size="sm"
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevent navigation
-                      schedule.id && handleDeleteSchedule(schedule.id);
+                      e.stopPropagation();
+                      if (schedule.id) {
+                        handleDeleteSchedule(schedule.id);
+                      }
                     }}
                   >
                     <Delete className="w-4 h-4" /> Delete
@@ -565,7 +600,4 @@ export function AttendanceList() {
       </div>
     </div>
   );
-}
-function setLoading(arg0: boolean) {
-  throw new Error("Function not implemented.");
 }

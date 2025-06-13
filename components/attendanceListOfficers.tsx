@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardDescription, CardTitle } from "./ui/card";
 import { useRouter } from "next/navigation";
-import { Edit, Plus } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 
 type AttendanceData = {
@@ -122,18 +121,7 @@ export function AttendanceListOfficers() {
   };
 
   // Open dialog for editing schedule
-  const handleEditClick = (schedule: AttendanceData) => {
-    setEditingSchedule(schedule);
-    setForm(schedule);
-    setDialogOpen(true);
-  };
 
-  // Open dialog for adding new schedule
-  const handleAddNewClick = () => {
-    setEditingSchedule(null);
-    setForm({ scheduleName: "", scheduleDate: "", description: "" });
-    setDialogOpen(true);
-  };
 
   // Update calendar view when month changes
   const handleMonthChange = (newMonth: Date) => {
@@ -165,12 +153,7 @@ export function AttendanceListOfficers() {
         ) : (
           <h1 className="font-bold text-2xl mb-4">No date selected</h1>
         )}
-{/* 
-        <div className="mb-4">
-          <Button onClick={handleAddNewClick}>
-            <Plus className="w-4 h-4 mr-1" /> Add Schedule
-          </Button>
-        </div> */}
+
 
         {filteredSchedules.length > 0 ? (
           filteredSchedules.map((schedule) => (
@@ -195,15 +178,7 @@ export function AttendanceListOfficers() {
                     )}
                   </p>
                 </div>
-                {/* <Button
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditClick(schedule);
-                  }}
-                >
-                  <Edit className="w-4 h-4" /> Edit
-                </Button> */}
+      
               </CardTitle>
               <CardDescription className="mt-2">
                 {schedule.description}

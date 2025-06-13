@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 type User = {
   firstName: string;
   lastName: string;
+  address: string;
   memberStatus: string;
   birthday?: string; // ISO date string
   monthJoin?: string; // Assuming "1" for January, etc.
@@ -157,6 +158,10 @@ export default function ViewProfilePage() {
 
             <p className="font-semibold">
               Status: {user?.memberStatus || "Not available"}
+            </p>
+
+            <p className="font-semibold">
+              Address: {user?.address || "Not available"}
             </p>
           </div>
         </Card>

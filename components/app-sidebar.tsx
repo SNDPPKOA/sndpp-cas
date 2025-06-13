@@ -19,9 +19,7 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Button } from "./ui/button";
 import { Logout } from "./ui/lougoutButton";
-import { ViewProfileButton } from "./ui/viewProfileButton";
 
 // Sidebar navigation data
 const data = {
@@ -46,7 +44,7 @@ type User = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [user, setUser] = useState<User | null>(null);
+  const [,setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");

@@ -1,79 +1,5 @@
 
 
-// "use client"
-
-// import { usePathname } from "next/navigation"
-// import { useEffect, useState } from "react"
-// import { doc, getDoc, collection, getDocs } from "firebase/firestore"
-// import { db } from "@/lib/firebase"
-// import { People, columns } from "./columns"
-// import { DataTable } from "./data-table"
-
-// export default function AttendancePage() {
-//   const [data, setData] = useState<People[]>([])
-//   const [scheduleDate, setScheduleDate] = useState("")
-//   const [scheduleName, setScheduleName] = useState("")
-
-//   const pathname = usePathname()
-//   const scheduleId = pathname.split("/").pop()
-
-//   useEffect(() => {
-//     if (!scheduleId) return
-
-//     const fetchData = async () => {
-//       try {
-//         const scheduleDoc = await getDoc(doc(db, "attendance", scheduleId))
-//         if (!scheduleDoc.exists()) {
-//           console.error("Schedule not found")
-//           return
-//         }
-
-//         const scheduleData = scheduleDoc.data()
-//         setScheduleDate(scheduleData.scheduleDate || "")
-//         setScheduleName(scheduleData.scheduleName || "")
-
-//         const usersSnap = await getDocs(collection(db, "users"))
-
-//         const usersData: People[] = usersSnap.docs.map((doc) => {
-//           const user = doc.data()
-//           return {
-//             id: doc.id,
-//             firstName: user.firstName || "",
-//             lastName: user.lastName || "",
-//             memberStatus: user.memberStatus || "",
-//           }
-//         })
-
-//         setData(usersData)
-//       } catch (error) {
-//         console.error("Error fetching data:", error)
-//       }
-//     }
-
-//     fetchData()
-//   }, [scheduleId])
-
-//   return (
-//     <>
-//       <h1 className="font-bold text-2xl text-center">Attendance</h1>
-//       <p className="text-center font-semibold">{scheduleDate} - {scheduleName}</p>
-//         <DataTable columns={columns} data={data} scheduleId={scheduleId as string} />
-
-//     </>
-//   )
-// }
-
-
-
-// WORKING PLEASE DONT TOUCH IT
-// WORKING PLEASE DONT TOUCH IT
-// WORKING PLEASE DONT TOUCH IT
-// WORKING PLEASE DONT TOUCH IT
-
-
-
-
-
 "use client"
 
 import { usePathname } from "next/navigation"
@@ -82,7 +8,7 @@ import { doc, getDoc, collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { People, columns } from "./columns"
 import { DataTable } from "./data-table"
-import { Button } from "react-day-picker"
+
 
 export default function AttendancePage() {
   const [data, setData] = useState<People[]>([])

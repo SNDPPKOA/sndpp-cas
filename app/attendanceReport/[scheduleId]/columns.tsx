@@ -1,22 +1,21 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-
+import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type People = {
-  id: string
-  firstName: string
-  lastName: string
-  scheduleDate?: string
-  status: string
-}
+  id: string;
+  firstName: string;
+  lastName: string;
+  scheduleDate?: string;
+  status: string;
+  memberStatus: string; // ✅ Add this
+};
 
 export const columns: ColumnDef<People>[] = [
-
   {
     accessorKey: "lastName",
     header: ({ column }) => {
@@ -28,7 +27,7 @@ export const columns: ColumnDef<People>[] = [
           Last Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
 
@@ -41,10 +40,4 @@ export const columns: ColumnDef<People>[] = [
     accessorKey: "status",
     header: "Status",
   },
-]
-
-
-
-   
-
-
+];

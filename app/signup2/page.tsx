@@ -1,6 +1,4 @@
 
-
-import { GalleryVerticalEnd } from "lucide-react"
 import Image from 'next/image';
 
 import { SignUpForm2 } from "@/components/signup2-form"
