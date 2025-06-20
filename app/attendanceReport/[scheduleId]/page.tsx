@@ -1,5 +1,3 @@
-
-
 // "use client"
 
 // import { useEffect, useState } from "react"
@@ -100,12 +98,9 @@
 //         <DataTable columns={columns} data={presents} scheduleId={scheduleId} />
 //       </section>
 
-
 //     </div>
 //   )
 // }
-
-
 
 "use client";
 
@@ -116,6 +111,7 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { useParams } from "next/navigation";
 import type { People } from "./columns"; // ✅ Reuse shared type
+import { BackMember } from "@/components/ui/back-to-member";
 export const runtime = "edge";
 interface AttendanceResponse {
   firstName: string;
@@ -154,20 +150,22 @@ export default function AttendanceReportPage() {
         const presentsList: People[] = [];
         const excusesList: People[] = [];
 
-        Object.entries(responses).forEach(([userId, res]: [string, AttendanceResponse]) => {
-          const person: People = {
-            id: userId,
-            firstName: res.firstName || "",
-            lastName: res.lastName || "",
-            scheduleDate: date ?? undefined, // ✅ aligns with People type
-            status: res.status,
-            memberStatus: res.memberStatus || ""
-          };
+        Object.entries(responses).forEach(
+          ([userId, res]: [string, AttendanceResponse]) => {
+            const person: People = {
+              id: userId,
+              firstName: res.firstName || "",
+              lastName: res.lastName || "",
+              scheduleDate: date ?? undefined, // ✅ aligns with People type
+              status: res.status,
+              memberStatus: res.memberStatus || "",
+            };
 
-          if (res.status === "Absent") absenteesList.push(person);
-          else if (res.status === "Present") presentsList.push(person);
-          else if (res.status === "Excuse") excusesList.push(person);
-        });
+            if (res.status === "Absent") absenteesList.push(person);
+            else if (res.status === "Present") presentsList.push(person);
+            else if (res.status === "Excuse") excusesList.push(person);
+          }
+        );
 
         setAbsentees(absenteesList);
         setPresents(presentsList);
@@ -181,9 +179,12 @@ export default function AttendanceReportPage() {
 
   return (
     <div className="container mx-auto py-10 space-y-10">
+      <BackMember />
       <h1 className="font-bold text-3xl text-center">Attendance Report</h1>
       {scheduleDate && (
-        <p className="text-center font-semibold">Schedule Date: {scheduleDate}</p>
+        <p className="text-center font-semibold">
+          Schedule Date: {scheduleDate}
+        </p>
       )}
 
       <section>

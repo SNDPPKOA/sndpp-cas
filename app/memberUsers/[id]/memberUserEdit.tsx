@@ -171,6 +171,7 @@
 //     </div>
 //   );
 // }
+
 "use client";
 
 import { useMemo } from "react";
@@ -252,105 +253,109 @@ export function UserProfile({ user }: { user: User }) {
     return age;
   }, [user.birthday]);
   return (
-    <div className="p-6">
-      <div className="flex gap-4">
-        <BackMember />
-      </div>
-
-      <div className="flex flex-col mt-12 gap-4">
-        <Card className="w-full flex justify-between items-start p-2">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32">
-              <Image
-                className="rounded-full object-cover"
-                src="/defaultProfile.png"
-                alt="Profile picture"
-                fill
-                priority
-              />
-            </div>
-
-            <div className="flex flex-col text-center sm:text-left">
-              <h1 className="text-2xl font-bold mb-2">
-                {user.firstName} {user.lastName}
-              </h1>
-              <p className="font-semibold">
-                Birthday:{" "}
-                {new Date(user.birthday).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <p className="font-semibold">Age: {age}</p>
-            </div>
-          </div>
-        </Card>
-
-        <div className="w-full flex flex-col sm:flex-row gap-4">
-          <Card className="w-full flex flex-col p-4">
-            <h1 className="text-xl font-bold mb-12">Service Information</h1>
-
-            <div className="flex gap-4 mb-4">
-              <p className="font-bold">Date of Join: </p>
-              <p>
-                {user.monthJoin ? monthNames[Number(user.monthJoin) - 1] : ""},{" "}
-                {user.yearJoin}
-              </p>
-            </div>
-
-            <div className="flex gap-4 mb-4">
-              <p className="font-bold">Status: </p>
-              <p>{user.memberStatus}</p>
-            </div>
-
-            <div className="flex gap-4 mb-4">
-              <p className="font-bold">Member for: </p>
-              {joinDuration && <p>{joinDuration}</p>}
-            </div>
-
-            <div className="flex gap-4 mb-4">
-              <p className="font-bold">Baptism: </p>
-              <p>{user.baptism}</p>
-            </div>
-
-            <div className="flex gap-4 mb-4">
-              <p className="font-bold">First Communion: </p>
-              <p>{user.communion}</p>
-            </div>
-
-            <div className="flex gap-4 mb-4">
-              <p className="font-bold">Kumpil: </p>
-              <p>{user.kumpil}</p>
-            </div>
-          </Card>
+    <div className="p-6 flex justify-center">
+      <div className="w-full max-w-4xl flex flex-col gap-6">
+        <div className="flex justify-start">
+          <BackMember />
         </div>
 
-        {user.liturgicalObj.length > 0 && (
-          <>
-            <h1 className="text-2xl font-bold mb-4">Liturgical Objects</h1>
+        <div className="flex flex-col mt-6 gap-4">
+          <Card className="w-full flex justify-center items-center p-4">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32">
+                <Image
+                  className="rounded-full object-cover"
+                  src="/defaultProfile.png"
+                  alt="Profile picture"
+                  fill
+                  priority
+                />
+              </div>
 
-            <div className="flex gap-4 flex-col sm:flex-row flex-wrap">
-              {allLiturgicalObjects
-                .filter((obj) => user.liturgicalObj.includes(obj.name))
-                .map((obj, index) => (
-                  <Card
-                    key={index}
-                    className="flex justify-center items-center flex-col w-full sm:w-[48%] lg:w-[30%] p-4 rounded"
-                  >
-                    <Image
-                      src={obj.image}
-                      alt={obj.name}
-                      width={100}
-                      height={100}
-                      className="rounded-t-lg"
-                    />
-                    <p className="mt-6">{obj.name}</p>
-                  </Card>
-                ))}
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl font-bold mb-2">
+                  {user.firstName} {user.lastName}
+                </h1>
+                <p className="font-semibold">
+                  Birthday:{" "}
+                  {new Date(user.birthday).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <p className="font-semibold">Age: {age}</p>
+              </div>
             </div>
-          </>
-        )}
+          </Card>
+
+          <Card className="w-full p-4">
+            <h1 className="text-xl font-bold mb-6">Service Information</h1>
+
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <p className="font-bold">Date of Join:</p>
+                <p>
+                  {user.monthJoin ? monthNames[Number(user.monthJoin) - 1] : ""}
+                  , {user.yearJoin}
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <p className="font-bold">Status:</p>
+                <p>{user.memberStatus}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <p className="font-bold">Member for:</p>
+                {joinDuration && <p>{joinDuration}</p>}
+              </div>
+
+              <div className="flex gap-2">
+                <p className="font-bold">Baptism:</p>
+                <p>{user.baptism}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <p className="font-bold">First Communion:</p>
+                <p>{user.communion}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <p className="font-bold">Kumpil:</p>
+                <p>{user.kumpil}</p>
+              </div>
+            </div>
+          </Card>
+
+          {user.liturgicalObj.length > 0 && (
+            <>
+              <h1 className="text-2xl font-bold mb-4 text-center">
+                Liturgical Objects
+              </h1>
+
+              <div className="flex flex-wrap justify-center gap-4">
+                {allLiturgicalObjects
+                  .filter((obj) => user.liturgicalObj.includes(obj.name))
+                  .map((obj, index) => (
+                    <Card
+                      key={index}
+                      className="flex flex-col items-center w-full sm:w-[48%] lg:w-[30%] p-4"
+                    >
+                      <Image
+                        src={obj.image}
+                        alt={obj.name}
+                        width={100}
+                        height={100}
+                        className="rounded-t-lg"
+                      />
+                      <p className="mt-4 text-center">{obj.name}</p>
+                    </Card>
+                  ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

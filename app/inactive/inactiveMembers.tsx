@@ -1,65 +1,74 @@
-// "use client"
+// "use client";
 
-// import { useEffect, useState } from "react"
-// import { collection, getDocs } from "firebase/firestore"
-// import { db } from "@/lib/firebase"
+// import { useEffect, useState } from "react";
+// import { collection, getDocs } from "firebase/firestore";
+// import { db } from "@/lib/firebase";
 
 // interface InactiveMember {
-//   id: string
-//   firstName: string
-//   lastName: string
-//   absences: number
-//   absentDates: string[]
+//   id: string;
+//   firstName: string;
+//   lastName: string;
+//   absences: number;
+//   absentDates: string[];
+// }
+
+// interface AttendanceResponse {
+//   firstName: string;
+//   lastName: string;
+//   status: "Present" | "Absent" | "Excuse";
 // }
 
 // export default function InactiveMembersPage() {
-//   const [inactiveMembers, setInactiveMembers] = useState<InactiveMember[]>([])
-//   const [loading, setLoading] = useState(false)
+//   const [inactiveMembers, setInactiveMembers] = useState<InactiveMember[]>([]);
+//   const [loading, setLoading] = useState(false);
 
 //   useEffect(() => {
 //     const fetchInactiveMembers = async () => {
-//       setLoading(true)
-//       const snapshot = await getDocs(collection(db, "attendance"))
-//       const userAbsenceMap: Record<string, InactiveMember> = {}
+//       setLoading(true);
+//       const snapshot = await getDocs(collection(db, "attendance"));
+//       const userAbsenceMap: Record<string, InactiveMember> = {};
 
 //       snapshot.forEach((docSnap) => {
-//         const data = docSnap.data()
-//         const responses = data.responses || {}
-//         const scheduleDate = data.scheduleDate || ""
+//         const data = docSnap.data();
+//         const responses: Record<string, AttendanceResponse> =
+//           data.responses || {};
+//         const scheduleDate = data.scheduleDate || "";
 
-//         Object.entries(responses).forEach(([userId, res]: any) => {
-//           if (res.status === "Absent") {
-//             if (!userAbsenceMap[userId]) {
-//               userAbsenceMap[userId] = {
-//                 id: userId,
-//                 firstName: res.firstName || "",
-//                 lastName: res.lastName || "",
-//                 absences: 1,
-//                 absentDates: [scheduleDate],
+//         Object.entries(responses).forEach(
+//           ([userId, res]: [string, AttendanceResponse]) => {
+//             if (res.status === "Absent") {
+//               if (!userAbsenceMap[userId]) {
+//                 userAbsenceMap[userId] = {
+//                   id: userId,
+//                   firstName: res.firstName || "",
+//                   lastName: res.lastName || "",
+//                   absences: 1,
+//                   absentDates: [scheduleDate],
+//                 };
+//               } else {
+//                 userAbsenceMap[userId].absences += 1;
+//                 userAbsenceMap[userId].absentDates.push(scheduleDate);
 //               }
-//             } else {
-//               userAbsenceMap[userId].absences += 1
-//               userAbsenceMap[userId].absentDates.push(scheduleDate)
 //             }
 //           }
-//         })
-//       })
+//         );
+//       });
 
 //       const inactive = Object.values(userAbsenceMap).filter(
 //         (user) => user.absences >= 2
-//       )
+//       );
 
-//       setInactiveMembers(inactive)
-//       setLoading(false)
-//     }
+//       setInactiveMembers(inactive);
+//       setLoading(false);
+//     };
 
-//     fetchInactiveMembers()
-//   }, [])
+//     fetchInactiveMembers();
+//   }, []);
 
 //   // 🧹 Delete only from UI (not Firebase)
 //   const handleDelete = (userId: string) => {
-//     setInactiveMembers((prev) => prev.filter((user) => user.id !== userId))
-//   }
+//     setInactiveMembers((prev) => prev.filter((user) => user.id !== userId));
+//   };
 
 //   return (
 //     <div className="container mx-auto py-10 space-y-6">
@@ -128,13 +137,13 @@
 //         </table>
 //       )}
 //     </div>
-//   )
+//   );
 // }
 
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 interface InactiveMember {
@@ -198,9 +207,39 @@ export default function InactiveMembersPage() {
     fetchInactiveMembers();
   }, []);
 
-  // 🧹 Delete only from UI (not Firebase)
-  const handleDelete = (userId: string) => {
+  const handleDelete = async (userId: string) => {
+    // ✅ Confirm delete
+    if (
+      !confirm(
+        "Are you sure you want to delete this user from attendance records?"
+      )
+    )
+      return;
+
+    // ✅ Remove from UI
     setInactiveMembers((prev) => prev.filter((user) => user.id !== userId));
+
+    // ✅ Remove from Firestore
+    try {
+      const attendanceSnap = await getDocs(collection(db, "attendance"));
+
+      const updates = attendanceSnap.docs.map(async (docSnap) => {
+        const data = docSnap.data();
+        const responses = data.responses || {};
+
+        if (responses[userId]) {
+          delete responses[userId];
+
+          const docRef = doc(db, "attendance", docSnap.id);
+          await updateDoc(docRef, { responses });
+        }
+      });
+
+      await Promise.all(updates);
+      console.log(`✅ Removed user ${userId} from attendance records.`);
+    } catch (err) {
+      console.error("❌ Error deleting user from attendance:", err);
+    }
   };
 
   return (

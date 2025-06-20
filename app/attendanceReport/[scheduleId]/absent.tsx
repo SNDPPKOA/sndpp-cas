@@ -69,8 +69,6 @@
 //   )
 // }
 
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -80,6 +78,7 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { useParams } from "next/navigation";
 import type { People } from "./columns";
+
 
 interface AttendanceResponse {
   firstName: string;
@@ -133,12 +132,14 @@ export default function Absent() {
 
   return (
     <>
+   
       <h1 className="font-bold text-2xl text-center">Absent</h1>
       {scheduleDate && (
         <p className="text-center font-semibold">
           Schedule Date: {scheduleDate}
         </p>
       )}
+
       <DataTable columns={columns} data={data} scheduleId={scheduleId} />
     </>
   );

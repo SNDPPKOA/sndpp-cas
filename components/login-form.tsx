@@ -1,6 +1,3 @@
-
-
-
 // "use client";
 
 // import { cn } from "@/lib/utils";
@@ -25,17 +22,24 @@
 //     e.preventDefault();
 
 //     // 1. Check for bypassed user first
-//     if (username === "OfficersAttendance" && password === "123") {
+//     if (username === "Attendance" && password === "OfficersOnly2025") {
+//       //  document.cookie = "authToken=officer-token; path=/";
+
 //       // Save data manually
 //       localStorage.setItem(
 //         "user",
 //         // IMPORTANT: Add 'uid' for bypassed users too if they need a profile page
-//         JSON.stringify({ uid: "officer-attendance-uid", username: "OfficersAttendance", role: "officer" })
+//         JSON.stringify({
+//           uid: "officer-attendance-uid",
+//           username: "Attendance",
+//           role: "officer",
+//         })
 //       );
 //       router.push("/attendanceOfficers");
 //       return;
-//     } else if (username === "Admin" && password === "123") {
+//     } else if (username === "Admin" && password === "AdminLangPo2025") {
 //       // Save data manually
+//       // document.cookie = "authToken=admin-token; path=/";
 //       localStorage.setItem(
 //         "user",
 //         // IMPORTANT: Add 'uid' for bypassed users too if they need a profile page
@@ -55,16 +59,27 @@
 //       );
 //       const querySnapshot = await getDocs(q);
 
+//       // if (!querySnapshot.empty) {
+//       //   // Get the document data
+//       //   const docData = querySnapshot.docs[0].data();
+//       //   // Get the document ID (this is your 'uid')
+//       //   const docId = querySnapshot.docs[0].id;
+
+//       //   // Combine the document data with its ID to form the complete user object
+//       //   const userWithUid = { ...docData, uid: docId }; // <--- HERE'S THE CRITICAL CHANGE
+
+//       //   localStorage.setItem("user", JSON.stringify(userWithUid)); // <--- Save the complete object
+//       //   router.push("/dashboardUsers");
+//       // }
+//       //
+
 //       if (!querySnapshot.empty) {
-//         // Get the document data
 //         const docData = querySnapshot.docs[0].data();
-//         // Get the document ID (this is your 'uid')
 //         const docId = querySnapshot.docs[0].id;
+//         const userWithUid = { ...docData, uid: docId };
 
-//         // Combine the document data with its ID to form the complete user object
-//         const userWithUid = { ...docData, uid: docId }; // <--- HERE'S THE CRITICAL CHANGE
-
-//         localStorage.setItem("user", JSON.stringify(userWithUid)); // <--- Save the complete object
+//         document.cookie = "authToken=user-token; path=/"; // ✅ set cookie for middleware
+//         localStorage.setItem("user", JSON.stringify(userWithUid));
 //         router.push("/dashboardUsers");
 //       } else {
 //         setError("Invalid username or password."); // Set error for display
@@ -138,16 +153,12 @@
 //   );
 // }
 
-
-
-
 "use client";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -158,32 +169,31 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"form">) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
   const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // 🔒 1. Hardcoded login for OfficersAttendance
-    if (username === "OfficersAttendance" && password === "123") {
+    // 1. Officer Bypass
+    if (username === "Attendance" && password === "OfficersOnly2025") {
+      document.cookie = "authToken=officer-token; path=/"; // ✅ Add cookie for officer
       localStorage.setItem(
         "user",
         JSON.stringify({
           uid: "officer-attendance-uid",
-          username: "OfficersAttendance",
+          username: "Attendance",
           role: "officer",
         })
       );
-
-      // ✅ Set cookie for middleware
-      document.cookie = "authToken=officer-token; path=/";
-
-      router.push("/attendanceOfficers");
+      // router.push("/attendanceOfficers");
+      window.location.href = "/attendanceOfficers";
       return;
     }
 
-    // 🔒 2. Hardcoded login for Admin
-    if (username === "Admin" && password === "123") {
+    // 2. Admin Bypass
+    if (username === "Admin" && password === "AdminLangPo2025") {
+      console.log("✅ Officer login matched");
+      document.cookie = "authToken=admin-token; path=/"; // ✅ Add cookie for admin
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -192,15 +202,12 @@ export function LoginForm({
           role: "admin",
         })
       );
-
-      // ✅ Set cookie for middleware
-      document.cookie = "authToken=admin-token; path=/";
-
-      router.push("/dashboard");
+      // router.push("/dashboard");
+      window.location.href = "/dashboard"; // or /dashboard or /attendanceOfficers
       return;
     }
 
-    // 🔐 3. Firebase users
+    // 3. Normal user login via Firebase
     try {
       const usersRef = collection(db, "users");
       const q = query(
@@ -213,15 +220,11 @@ export function LoginForm({
       if (!querySnapshot.empty) {
         const docData = querySnapshot.docs[0].data();
         const docId = querySnapshot.docs[0].id;
-
         const userWithUid = { ...docData, uid: docId };
 
+        document.cookie = "authToken=user-token; path=/"; // ✅ Cookie for regular users
         localStorage.setItem("user", JSON.stringify(userWithUid));
-
-        // ✅ Set cookie for middleware
-        document.cookie = `authToken=${docId}; path=/`;
-
-        router.push("/dashboardUsers");
+        window.location.href = "/dashboardUsers";
       } else {
         setError("Invalid username or password.");
         alert("Invalid username or password.");
@@ -276,9 +279,7 @@ export function LoginForm({
           />
         </div>
 
-        {error && (
-          <p className="text-red-500 text-sm text-center">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <Button type="submit" className="w-full">
           Login
