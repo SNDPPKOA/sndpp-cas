@@ -55,7 +55,7 @@ export function UserSideBar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
+              <Link href="/dashboardUsers">
                 <div className="flex gap-2 items-center">
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
                     <Image
