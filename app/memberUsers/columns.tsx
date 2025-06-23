@@ -40,16 +40,9 @@ export const columns: ColumnDef<People>[] = [
 
   {
     accessorKey: "memberStatus",
-    header: "Member",
-  },
-
-  {
-    accessorKey: "age",
-    header: "Age",
-  },
-  {
-    accessorKey: "birthday",
-    header: "Birthday",
+    header: "",
+    enableHiding: true, // optional but explicit
+    cell: () => null, // hide from table view
   },
 
    
