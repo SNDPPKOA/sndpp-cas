@@ -363,6 +363,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Link } from "lucide-react";
 
 // ✅ Sanitize basic input to prevent script injection
 function sanitizeInput(str: string) {
@@ -711,20 +712,23 @@ export function SignUpForm2({
         </div>
 
         <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
-          <Button type="submit" className="flex-1">
+          <Button
+            className="flex-1  bg-[#972D06] text-[#FEFEFE]"
+            onClick={() => router.back()}
+          >
             Back
           </Button>
 
-          <Button type="submit" className="flex-1  bg-[#972D06] text-[#FEFEFE]">
+          <Button type="submit" className="flex-1 ">
             Next
           </Button>
         </div>
       </div>
       <div className="text-center text-sm">
         Already have an account?{" "}
-        <a href="/" className="underline underline-offset-4">
-          Sign in
-        </a>
+        <Link href="/" className="underline underline-offset-4">
+          Log in
+        </Link>
       </div>
     </form>
   );

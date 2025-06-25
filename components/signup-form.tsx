@@ -169,7 +169,6 @@
 //     </form>
 //   );
 // }
-
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -179,7 +178,8 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import bcrypt from "bcryptjs";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 function sanitizeInput(str: string) {
   return str.replace(/[<>]/g, "").trim();
@@ -198,6 +198,7 @@ export function SignUpForm({
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
   const router = useRouter();
+
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -207,8 +208,9 @@ export function SignUpForm({
     password: "",
     confirmPassword: "",
   });
-  const [, setError] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // ✅ loading state
 
   const handleChange = (field: keyof typeof form, value: string) => {
     const trimmedStart = value.trimStart();
@@ -218,6 +220,7 @@ export function SignUpForm({
       !isAlphaSpace(trimmedStart)
     )
       return;
+
     if (field === "address" && !isAddressSafe(trimmedStart)) return;
 
     if (
@@ -225,8 +228,8 @@ export function SignUpForm({
       field === "password" ||
       field === "confirmPassword"
     ) {
-      if (/[<>]/.test(trimmedStart)) return; // ❌ Block < >
-      if (!/^[A-Za-z0-9_@]*$/.test(trimmedStart)) return; // ❌ Block anything not letter, number, _ or @
+      if (/[<>]/.test(trimmedStart)) return;
+      if (!/^[A-Za-z0-9_@]*$/.test(trimmedStart)) return;
     }
 
     setForm((prev) => ({ ...prev, [field]: trimmedStart }));
@@ -238,36 +241,44 @@ export function SignUpForm({
 
   const handleNext = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true); // ✅ Start loading
 
-    const sanitized = {
-      firstName: sanitizeInput(form.firstName),
-      lastName: sanitizeInput(form.lastName),
-      address: sanitizeInput(form.address),
-      birthday: form.birthday.trim(),
-      username: sanitizeInput(form.username),
-      password: form.password.trim(),
-      confirmPassword: form.confirmPassword.trim(),
-    };
+    try {
+      const sanitized = {
+        firstName: sanitizeInput(form.firstName),
+        lastName: sanitizeInput(form.lastName),
+        address: sanitizeInput(form.address),
+        birthday: form.birthday.trim(),
+        username: sanitizeInput(form.username),
+        password: form.password.trim(),
+        confirmPassword: form.confirmPassword.trim(),
+      };
 
-    if (sanitized.password !== sanitized.confirmPassword) {
-      alert("Passwords do not match");
-      return;
+      if (sanitized.password !== sanitized.confirmPassword) {
+        alert("Passwords do not match");
+        setLoading(false);
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(sanitized.password, 10);
+
+      const finalData = {
+        firstName: sanitized.firstName,
+        lastName: sanitized.lastName,
+        address: sanitized.address,
+        birthday: sanitized.birthday,
+        username: sanitized.username,
+        password: hashedPassword,
+      };
+
+      localStorage.setItem("signupData", JSON.stringify(finalData));
+      router.push("/signup2");
+    } catch (err) {
+      console.error("Error in handleNext:", err);
+      alert("Something went wrong.");
+    } finally {
+      setLoading(false); // ✅ End loading
     }
-
-    const hashedPassword = await bcrypt.hash(sanitized.password, 10);
-
-    const finalData = {
-      firstName: sanitized.firstName,
-      lastName: sanitized.lastName,
-      address: sanitized.address,
-      birthday: sanitized.birthday,
-      username: sanitized.username,
-      password: hashedPassword,
-    };
-
-    localStorage.setItem("signupData", JSON.stringify(finalData));
-    router.push("/signup2");
-    setError("");
   };
 
   return (
@@ -386,7 +397,6 @@ export function SignUpForm({
               onChange={(e) => handleChange("confirmPassword", e.target.value)}
               required
             />
-
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
@@ -398,16 +408,24 @@ export function SignUpForm({
           </div>
         </div>
 
-        <Button type="submit" className="w-full">
-          Next
+        {/* ✅ Loading Button */}
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? (
+            <div className="flex items-center justify-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading...
+            </div>
+          ) : (
+            "Next"
+          )}
         </Button>
       </div>
 
       <div className="text-center text-sm">
         Already have an account?{" "}
-        <a href="/" className="underline underline-offset-4">
-          Sign in
-        </a>
+        <Link href="/" className="underline underline-offset-4">
+          Log in
+        </Link>
       </div>
     </form>
   );
