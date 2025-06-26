@@ -666,9 +666,6 @@
 //   );
 // }
 
-
-
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -874,9 +871,12 @@ export function MemberProfileClient({ user }: { user: User }) {
                   day: "numeric",
                 })}
               </p>
+              <p className="font-semibold">Age: {age}</p>
+              <p className="font-semibold">
+                Status: {user?.memberStatus || "Not available"}
+              </p>
               <p className="font-semibold">Address: {user.address}</p>
               {/* <p className="font-semibold">Age: {user.age}</p> */}
-              <p className="font-semibold">Age: {age}</p>
             </div>
           </div>
 

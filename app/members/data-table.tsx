@@ -1,5 +1,4 @@
-
-"use client"
+"use client";
 
 import {
   ColumnDef,
@@ -11,7 +10,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -20,27 +19,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Input } from "@/components/ui/input"
-import React from "react"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import React from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 // Ensure TData includes an `id` field
 interface DataTableProps<TData extends { id: string }, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
 export function DataTable<TData extends { id: string }, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
 
   const table = useReactTable({
     data,
@@ -55,14 +55,16 @@ export function DataTable<TData extends { id: string }, TValue>({
       sorting,
       columnFilters,
     },
-  })
+  });
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-center py-4 gap-6">
         <Input
           placeholder="Filter Last Name..."
-          value={(table.getColumn("lastName")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("lastName")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("lastName")?.setFilterValue(event.target.value)
           }
@@ -74,10 +76,15 @@ export function DataTable<TData extends { id: string }, TValue>({
           <select
             id="memberStatus"
             name="memberStatus"
-            value={(table.getColumn("memberStatus")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("memberStatus")?.getFilterValue() as string) ??
+              ""
+            }
             onChange={(event) => {
-              const value = event.target.value
-              table.getColumn("memberStatus")?.setFilterValue(value === "All" ? undefined : value)
+              const value = event.target.value;
+              table
+                .getColumn("memberStatus")
+                ?.setFilterValue(value === "All" ? undefined : value);
             }}
             className="border border-gray-300 dark:border-gray-600 rounded-md p-2 text-sm dark:text-white"
           >
@@ -99,7 +106,10 @@ export function DataTable<TData extends { id: string }, TValue>({
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -117,14 +127,20 @@ export function DataTable<TData extends { id: string }, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -132,8 +148,24 @@ export function DataTable<TData extends { id: string }, TValue>({
           </TableBody>
         </Table>
       </div>
-
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
     </div>
-  )
+  );
 }
-
