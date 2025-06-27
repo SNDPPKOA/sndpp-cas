@@ -177,6 +177,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import MessageModal from "@/components/modal"; // ✅ your modal component
+import ForgotPasswordDialog from "./forgetPass";
 
 export function LoginForm({
   className,
@@ -258,104 +259,103 @@ export function LoginForm({
   };
 
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      {...props}
-      onSubmit={handleLogin}
-    >
-      {showModal && (
-        <MessageModal
-          message={modalMessage}
-          onClose={() => setShowModal(false)}
-        />
-      )}
-
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-3xl font-bold">Login to your account</h1>
-        <p className="text-balance text-sm text-muted-foreground">
-          Enter your Username below to login to your account
-        </p>
-      </div>
-
-      <div className="grid gap-6">
-        {/* Username */}
-        <div className="grid gap-2">
-          <Label htmlFor="username">Username</Label>
-          <Input
-            id="username"
-            type="text"
-            placeholder="YourUsername_123@"
-            value={username}
-            onChange={(e) => {
-              const value = e.target.value;
-              const allowed = /^[a-zA-Z0-9_@]*$/;
-              if (allowed.test(value)) {
-                setUsername(value);
-              }
-            }}
-            required
+    <div className="relative">
+      <form
+        className={cn("flex flex-col gap-6", className)}
+        {...props}
+        onSubmit={handleLogin}
+      >
+        {showModal && (
+          <MessageModal
+            message={modalMessage}
+            onClose={() => setShowModal(false)}
           />
+        )}
+
+        <div className="flex flex-col items-center gap-2 text-center">
+          <h1 className="text-3xl font-bold">Login to your account</h1>
+          <p className="text-balance text-sm text-muted-foreground">
+            Enter your Username below to login to your account
+          </p>
         </div>
 
-        {/* Password */}
-        <div className="grid gap-2">
-          <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
-            <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Forgot your password?
-            </a>
-          </div>
-          <div className="relative">
+        <div className="grid gap-6">
+          {/* Username */}
+          <div className="grid gap-2">
+            <Label htmlFor="username">Username</Label>
             <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              value={password}
+              id="username"
+              type="text"
+              placeholder="YourUsername_123@"
+              value={username}
               onChange={(e) => {
                 const value = e.target.value;
                 const allowed = /^[a-zA-Z0-9_@]*$/;
                 if (allowed.test(value)) {
-                  setPassword(value);
+                  setUsername(value);
                 }
               }}
               required
-              className="pr-10"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black dark:hover:text-white"
-              tabIndex={-1}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
           </div>
+
+          {/* Password */}
+          <div className="grid gap-2">
+            <div className="flex items-center">
+              <Label htmlFor="password">Password</Label>
+            </div>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const allowed = /^[a-zA-Z0-9_@]*$/;
+                  if (allowed.test(value)) {
+                    setPassword(value);
+                  }
+                }}
+                required
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black dark:hover:text-white"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Error */}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+          {/* Submit Button */}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin w-4 h-4" />
+                Logging in...
+              </div>
+            ) : (
+              "Login"
+            )}
+          </Button>
         </div>
 
-        {/* Error */}
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-        {/* Submit Button */}
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? (
-            <div className="flex items-center justify-center gap-2">
-              <Loader2 className="animate-spin w-4 h-4" />
-              Logging in...
-            </div>
-          ) : (
-            "Login"
-          )}
-        </Button>
+        <div className="text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <a href="/signup" className="underline underline-offset-4">
+            Sign up
+          </a>
+        </div>
+      </form>
+      <div className="absolute right-1 top-[53%]">
+        <ForgotPasswordDialog />
       </div>
-
-      <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <a href="/signup" className="underline underline-offset-4">
-          Sign up
-        </a>
-      </div>
-    </form>
+    </div>
   );
 }
