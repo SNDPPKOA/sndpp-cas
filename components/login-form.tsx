@@ -165,6 +165,7 @@
 //     </form>
 //   );
 // }
+
 "use client";
 
 import { useState } from "react";
@@ -237,10 +238,11 @@ export function LoginForm({
       if (!querySnapshot.empty) {
         const docData = querySnapshot.docs[0].data();
         const docId = querySnapshot.docs[0].id;
-        const userWithUid = { ...docData, uid: docId };
+        // const userWithUid = { ...docData, uid: docId };
+        const userWithId = { ...docData, id: docId }; // 👈 match `viewProfile` expected key
 
         document.cookie = "authToken=user-token; path=/";
-        localStorage.setItem("user", JSON.stringify(userWithUid));
+        localStorage.setItem("user", JSON.stringify(userWithId));
         window.location.href = "/dashboardUsers";
       } else {
         setModalMessage("Invalid username or password.");

@@ -1,5 +1,4 @@
-
-"use client"
+"use client";
 
 import {
   ColumnDef,
@@ -11,7 +10,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -20,31 +19,32 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import React from "react"
-import { doc, updateDoc, deleteField } from "firebase/firestore"
-import { db } from "@/lib/firebase"
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import React from "react";
+import { doc, updateDoc, deleteField } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 // Ensure TData includes an id field
 
 interface DataTableProps<
   TData extends { id: string; firstName: string; lastName: string },
   TValue
-> 
-{
-  data: TData[]
-  columns: ColumnDef<TData, TValue>[]
-  scheduleId: string
-  attendanceStates: Record<string, number>
-  setAttendanceStates: React.Dispatch<React.SetStateAction<Record<string, number>>>
+> {
+  data: TData[];
+  columns: ColumnDef<TData, TValue>[];
+  scheduleId: string;
+  attendanceStates: Record<string, number>;
+  setAttendanceStates: React.Dispatch<
+    React.SetStateAction<Record<string, number>>
+  >;
 }
 
 // interface DataTableProps<
 //   TData extends { id: string; firstName: string; lastName: string },
 //   TValue
-// > 
+// >
 // {
 //   data: TData[]
 //   columns: ColumnDef<TData, TValue>[]
@@ -68,10 +68,10 @@ export function DataTable<
   attendanceStates,
   setAttendanceStates,
 }: DataTableProps<TData, TValue>) {
- 
-
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
 
   const table = useReactTable({
     data,
@@ -86,9 +86,9 @@ export function DataTable<
       sorting,
       columnFilters,
     },
-  })
+  });
 
-  const attendanceOptions = ["Click", "Present", "Absent", "Excuse"]
+  const attendanceOptions = ["Click", "Present", "Absent", "Excuse"];
 
   const handleAttendance = async (
     rowId: string,
@@ -97,23 +97,23 @@ export function DataTable<
     lastName: string
   ) => {
     setAttendanceStates((prev) => {
-      const currentIndex = prev[rowId] ?? 0
-      const nextIndex = (currentIndex + 1) % attendanceOptions.length
+      const currentIndex = prev[rowId] ?? 0;
+      const nextIndex = (currentIndex + 1) % attendanceOptions.length;
 
       const newState = {
         ...prev,
         [rowId]: nextIndex,
-      }
+      };
 
-      const status = attendanceOptions[nextIndex]
-      const attendanceRef = doc(db, "attendance", scheduleId)
+      const status = attendanceOptions[nextIndex];
+      const attendanceRef = doc(db, "attendance", scheduleId);
 
       if (status === "Click") {
         updateDoc(attendanceRef, {
           [`responses.${rowId}`]: deleteField(),
         }).catch((error) => {
-          console.error("Error deleting attendance status:", error)
-        })
+          console.error("Error deleting attendance status:", error);
+        });
       } else {
         updateDoc(attendanceRef, {
           [`responses.${rowId}`]: {
@@ -122,33 +122,35 @@ export function DataTable<
             status,
           },
         }).catch((error) => {
-          console.error("Error updating attendance status:", error)
-        })
+          console.error("Error updating attendance status:", error);
+        });
       }
 
-      return newState
-    })
-  }
+      return newState;
+    });
+  };
 
   const getColorClasses = (status: string) => {
     switch (status) {
       case "Present":
-        return "bg-green-500 text-white hover:bg-green-600"
+        return "bg-green-500 text-white hover:bg-green-600";
       case "Absent":
-        return "bg-red-500 text-white hover:bg-red-600"
+        return "bg-red-500 text-white hover:bg-red-600";
       case "Excuse":
-        return "bg-yellow-400 text-black hover:bg-yellow-500"
+        return "bg-yellow-400 text-black hover:bg-yellow-500";
       default:
-        return "bg-gray-300 text-black"
+        return "bg-gray-300 text-black";
     }
-  }
+  };
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-center py-4 gap-6">
         <Input
-          placeholder="Filter Last Name..."
-          value={(table.getColumn("lastName")?.getFilterValue() as string) ?? ""}
+          placeholder="Search Last Name..."
+          value={
+            (table.getColumn("lastName")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("lastName")?.setFilterValue(event.target.value)
           }
@@ -160,12 +162,15 @@ export function DataTable<
           <select
             id="memberStatus"
             name="memberStatus"
-            value={(table.getColumn("memberStatus")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("memberStatus")?.getFilterValue() as string) ??
+              ""
+            }
             onChange={(event) => {
-              const value = event.target.value
-              table.getColumn("memberStatus")?.setFilterValue(
-                value === "All" ? undefined : value
-              )
+              const value = event.target.value;
+              table
+                .getColumn("memberStatus")
+                ?.setFilterValue(value === "All" ? undefined : value);
             }}
             className="border border-gray-300 dark:border-gray-600 rounded-md p-2 text-sm dark:text-white"
           >
@@ -185,8 +190,6 @@ export function DataTable<
             Summary
           </Button>
         )} */}
-          
-
       </div>
 
       <div className="rounded-md border">
@@ -198,7 +201,10 @@ export function DataTable<
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -209,12 +215,18 @@ export function DataTable<
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => {
                 const currentStatus =
-                  attendanceOptions[attendanceStates[row.original.id] ?? 0]
+                  attendanceOptions[attendanceStates[row.original.id] ?? 0];
                 return (
-                  <TableRow key={row.id} className="cursor-pointer hover:bg-muted">
+                  <TableRow
+                    key={row.id}
+                    className="cursor-pointer hover:bg-muted"
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
 
@@ -236,11 +248,14 @@ export function DataTable<
                       </Button>
                     </TableCell>
                   </TableRow>
-                )
+                );
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -248,6 +263,24 @@ export function DataTable<
           </TableBody>
         </Table>
       </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
     </div>
-  )
+  );
 }
