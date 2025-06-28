@@ -165,7 +165,6 @@
 //     </form>
 //   );
 // }
-
 "use client";
 
 import { useState } from "react";
@@ -176,7 +175,8 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import MessageModal from "@/components/modal"; // ✅ your modal component
+import bcrypt from "bcryptjs"; // ✅ import bcryptjs
+import MessageModal from "@/components/modal";
 import ForgotPasswordDialog from "./forgetPass";
 
 export function LoginForm({
@@ -227,24 +227,30 @@ export function LoginForm({
         return;
       }
 
-      // Firebase login
+      // Firebase login with hashed password
       const usersRef = collection(db, "users");
-      const q = query(
-        usersRef,
-        where("username", "==", username),
-        where("password", "==", password)
-      );
+      const q = query(usersRef, where("username", "==", username));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        const docData = querySnapshot.docs[0].data();
-        const docId = querySnapshot.docs[0].id;
-        // const userWithUid = { ...docData, uid: docId };
-        const userWithId = { ...docData, id: docId }; // 👈 match `viewProfile` expected key
+        const doc = querySnapshot.docs[0];
+        const docData = doc.data();
+        const docId = doc.id;
 
-        document.cookie = "authToken=user-token; path=/";
-        localStorage.setItem("user", JSON.stringify(userWithId));
-        window.location.href = "/dashboardUsers";
+        const isPasswordMatch = await bcrypt.compare(
+          password,
+          docData.password
+        );
+
+        if (isPasswordMatch) {
+          const userWithId = { ...docData, id: docId };
+          document.cookie = "authToken=user-token; path=/";
+          localStorage.setItem("user", JSON.stringify(userWithId));
+          window.location.href = "/dashboardUsers";
+        } else {
+          setModalMessage("Invalid username or password.");
+          setShowModal(true);
+        }
       } else {
         setModalMessage("Invalid username or password.");
         setShowModal(true);

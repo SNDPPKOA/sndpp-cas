@@ -97,7 +97,6 @@
 //     </form>
 //   )
 // }
-
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -108,12 +107,12 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Link } from "lucide-react";
+import Link from "next/link";
 
 // Utility functions
 const sanitizeText = (str: string) => str.replace(/[<>]/g, "").trim();
 const isAlphaSpace = (str: string) => /^[A-Za-z\s]*$/.test(str);
-const isValidContact = (str: string) => /^[0-9]{10,11}$/.test(str); // adjust as needed
+const isValidContact = (str: string) => /^[0-9]{10,11}$/.test(str);
 
 export function SignUpForm3({
   className,
@@ -129,8 +128,19 @@ export function SignUpForm3({
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("signupData") || "{}");
-    setForm((prev) => ({ ...prev, ...saved }));
+    setForm({
+      parentFirstName: saved.parentFirstName || "",
+      parentLastName: saved.parentLastName || "",
+      contactNumber: saved.contactNumber || "",
+      fbName: saved.fbName || "",
+    });
   }, []);
+
+  const updateLocalStorage = (field: string, value: string) => {
+    const existing = JSON.parse(localStorage.getItem("signupData") || "{}");
+    const updated = { ...existing, [field]: value };
+    localStorage.setItem("signupData", JSON.stringify(updated));
+  };
 
   const handleChange = (field: keyof typeof form, value: string) => {
     const sanitized = value.trimStart();
@@ -144,16 +154,18 @@ export function SignUpForm3({
     if (field === "fbName" && /[<>]/.test(sanitized)) return;
 
     setForm((prev) => ({ ...prev, [field]: sanitized }));
+    updateLocalStorage(field, sanitized);
   };
 
   const handleBlur = (field: keyof typeof form, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: sanitizeText(value) }));
+    const trimmed = sanitizeText(value);
+    setForm((prev) => ({ ...prev, [field]: trimmed }));
+    updateLocalStorage(field, trimmed);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Basic phone validation
     if (!isValidContact(form.contactNumber)) {
       alert("Please enter a valid contact number (10–11 digits).");
       return;
@@ -234,6 +246,7 @@ export function SignUpForm3({
             placeholder="09123456789"
             value={form.contactNumber}
             onChange={(e) => handleChange("contactNumber", e.target.value)}
+            onBlur={(e) => handleBlur("contactNumber", e.target.value)}
             required
           />
         </div>
@@ -250,15 +263,16 @@ export function SignUpForm3({
             required
           />
         </div>
+
         <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
           <Button
             className="flex-1 bg-[#972D06] text-[#FEFEFE]"
+            type="button"
             onClick={() => router.back()}
           >
             Back
           </Button>
-
-          <Button type="submit" className="flex-1   ">
+          <Button type="submit" className="flex-1">
             Submit
           </Button>
         </div>

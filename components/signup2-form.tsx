@@ -362,8 +362,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Link } from "lucide-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
 // ✅ Sanitize basic input to prevent script injection
 function sanitizeInput(str: string) {
@@ -415,6 +415,22 @@ export function SignUpForm2({
     localStorage.setItem("signupData", JSON.stringify(mergedData));
     router.push("/signup3");
   };
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("signupData") || "{}");
+
+    setForm((prev) => ({
+      ...prev,
+      monthJoin: saved.monthJoin || "",
+      yearJoin: saved.yearJoin || "",
+      memberStatus: saved.memberStatus || "",
+      liturgicalObj: Array.isArray(saved.liturgicalObj)
+        ? saved.liturgicalObj
+        : [],
+      baptism: saved.baptism || "",
+      communion: saved.communion || "",
+      kumpil: saved.kumpil || "",
+    }));
+  }, []);
 
   return (
     <form
@@ -726,7 +742,7 @@ export function SignUpForm2({
       </div>
       <div className="text-center text-sm">
         Already have an account?{" "}
-        <Link href="/" className="underline underline-offset-4">
+        <Link href="/signup" className="underline underline-offset-4">
           Log in
         </Link>
       </div>
