@@ -165,6 +165,7 @@
 //     </form>
 //   );
 // }
+
 "use client";
 
 import { useState } from "react";
@@ -178,7 +179,7 @@ import { db } from "@/lib/firebase";
 import bcrypt from "bcryptjs"; // ✅ import bcryptjs
 import MessageModal from "@/components/modal";
 import ForgotPasswordDialog from "./forgetPass";
-
+import { useRouter } from "next/navigation";
 export function LoginForm({
   className,
   ...props
@@ -190,6 +191,7 @@ export function LoginForm({
   const [showPassword, setShowPassword] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -208,7 +210,8 @@ export function LoginForm({
             role: "officer",
           })
         );
-        window.location.href = "/attendanceOfficers";
+        router.push("/attendanceOfficers");
+        // window.location.href = "/attendanceOfficers";
         return;
       }
 
@@ -223,7 +226,8 @@ export function LoginForm({
             role: "admin",
           })
         );
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
+        // window.location.href = "/dashboard";
         return;
       }
 
@@ -246,13 +250,14 @@ export function LoginForm({
           const userWithId = { ...docData, id: docId };
           document.cookie = "authToken=user-token; path=/";
           localStorage.setItem("user", JSON.stringify(userWithId));
-          window.location.href = "/dashboardUsers";
+          router.push("/dashboardUsers");
+          // window.location.href = "/dashboardUsers";
         } else {
-          setModalMessage("Invalid username or password.");
+          setModalMessage("Wrong username or password.");
           setShowModal(true);
         }
       } else {
-        setModalMessage("Invalid username or password.");
+        setModalMessage("Wrong username or password.");
         setShowModal(true);
       }
     } catch (err) {

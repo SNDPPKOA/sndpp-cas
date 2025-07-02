@@ -364,6 +364,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
 // ✅ Sanitize basic input to prevent script injection
 function sanitizeInput(str: string) {
@@ -395,8 +396,11 @@ export function SignUpForm2({
     }));
   };
 
+  const [loading, setLoading] = useState(false);
+
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true); // Start loading
 
     const sanitizedForm = {
       ...form,
@@ -406,15 +410,40 @@ export function SignUpForm2({
       baptism: sanitizeInput(form.baptism),
       communion: sanitizeInput(form.communion),
       kumpil: sanitizeInput(form.kumpil),
-      // ⛔ liturgicalObj is from checkboxes — no need to sanitize unless user can type them
     };
 
     const prevData = JSON.parse(localStorage.getItem("signupData") || "{}");
     const mergedData = { ...prevData, ...sanitizedForm };
 
     localStorage.setItem("signupData", JSON.stringify(mergedData));
-    router.push("/signup3");
+
+    // Delay router push slightly to allow UI to show spinner
+    setTimeout(() => {
+      router.push("/signup3");
+      setLoading(false); // Optional: safe fallback
+    }, 300);
   };
+
+  // const handleNext = (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   const sanitizedForm = {
+  //     ...form,
+  //     monthJoin: sanitizeInput(form.monthJoin),
+  //     yearJoin: sanitizeInput(form.yearJoin),
+  //     memberStatus: sanitizeInput(form.memberStatus),
+  //     baptism: sanitizeInput(form.baptism),
+  //     communion: sanitizeInput(form.communion),
+  //     kumpil: sanitizeInput(form.kumpil),
+  //     // ⛔ liturgicalObj is from checkboxes — no need to sanitize unless user can type them
+  //   };
+
+  //   const prevData = JSON.parse(localStorage.getItem("signupData") || "{}");
+  //   const mergedData = { ...prevData, ...sanitizedForm };
+
+  //   localStorage.setItem("signupData", JSON.stringify(mergedData));
+  //   router.push("/signup3");
+  // };
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("signupData") || "{}");
 
@@ -649,6 +678,114 @@ export function SignUpForm2({
               className="w-[20px]"
             />
           </div>
+          <div className="flex gap-2">
+            <label htmlFor="baptism-no">No</label>
+            <input
+              type="radio"
+              id="baptism-no"
+              name="baptism"
+              value="No"
+              checked={form.baptism === "No"}
+              onChange={() =>
+                setForm({
+                  ...form,
+                  baptism: "No",
+                  communion: "No",
+                  kumpil: "No",
+                })
+              }
+              required
+              className="w-[20px]"
+            />
+          </div>
+        </div>
+
+        <label htmlFor="communion-yes">Have First Communion?</label>
+        <div className="flex justify-center items-center gap-4">
+          <div className="flex gap-2">
+            <label htmlFor="communion-yes">Yes</label>
+            <input
+              type="radio"
+              id="communion-yes"
+              name="communion"
+              value="Yes"
+              checked={form.communion === "Yes"}
+              onChange={(e) => setForm({ ...form, communion: e.target.value })}
+              required
+              className="w-[20px]"
+              disabled={form.baptism === "No"} // optional: disables if baptism is No
+            />
+          </div>
+          <div className="flex gap-2">
+            <label htmlFor="communion-no">No</label>
+            <input
+              type="radio"
+              id="communion-no"
+              name="communion"
+              value="No"
+              checked={form.communion === "No"}
+              onChange={() =>
+                setForm({
+                  ...form,
+                  communion: "No",
+                  kumpil: "No",
+                })
+              }
+              required
+              className="w-[20px]"
+              disabled={form.baptism === "No"} // optional: disables if baptism is No
+            />
+          </div>
+        </div>
+
+        <label htmlFor="kumpil-yes">Have Kumpil?</label>
+        <div className="flex justify-center items-center gap-4">
+          <div className="flex gap-2">
+            <label htmlFor="kumpil-yes">Yes</label>
+            <input
+              type="radio"
+              id="kumpil-yes"
+              name="kumpil"
+              value="Yes"
+              checked={form.kumpil === "Yes"}
+              onChange={(e) => setForm({ ...form, kumpil: e.target.value })}
+              required
+              className="w-[20px]"
+              disabled={form.baptism === "No" || form.communion === "No"}
+            />
+          </div>
+          <div className="flex gap-2">
+            <label htmlFor="kumpil-no">No</label>
+            <input
+              type="radio"
+              id="kumpil-no"
+              name="kumpil"
+              value="No"
+              checked={form.kumpil === "No"}
+              onChange={(e) => setForm({ ...form, kumpil: e.target.value })}
+              required
+              className="w-[20px]"
+              disabled={form.baptism === "No" || form.communion === "No"}
+            />
+          </div>
+        </div>
+
+        {/* 
+        <label htmlFor="baptism-yes">Have Baptism?</label>
+        <div className="flex justify-center items-center gap-4">
+          <div className="flex gap-2">
+            <label htmlFor="baptism-yes">Yes</label>
+            <input
+              type="radio"
+              id="baptism-yes"
+              name="baptism"
+              value="Yes"
+              checked={form.baptism === "Yes"}
+              onChange={(e) => setForm({ ...form, baptism: e.target.value })}
+              required
+              className="w-[20px]"
+            />
+          </div>
 
           <div className="flex gap-2">
             <label htmlFor="baptism-no">No</label>
@@ -725,7 +862,7 @@ export function SignUpForm2({
               className="w-[20px]"
             />
           </div>
-        </div>
+        </div> */}
 
         <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
           <Button
@@ -734,10 +871,20 @@ export function SignUpForm2({
           >
             Back
           </Button>
-
-          <Button type="submit" className="flex-1 ">
-            Next
+          <Button type="submit" className="flex-1" disabled={loading}>
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading...
+              </div>
+            ) : (
+              "Next"
+            )}
           </Button>
+
+          {/* <Button type="submit" className="flex-1 ">
+            Next
+          </Button> */}
         </div>
       </div>
       <div className="text-center text-sm">

@@ -371,7 +371,7 @@ export function SignUpForm({
         firstName: sanitized.firstName,
         lastName: sanitized.lastName,
         address: sanitized.address,
-        birthday: sanitized.birthday,
+        birthday: sanitized.birthday, 
         username: sanitized.username,
         password: hashedPassword,
         plainPassword: sanitized.password, // ⛔ TEMPORARY: used to retain password on back nav

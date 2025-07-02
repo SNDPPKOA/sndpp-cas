@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import Image from "next/image";
@@ -93,8 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                ADMIN
               </h1>
               <h4 className="text-sm">Commission for Altar Server</h4>
-    
-       
+
             </div>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -132,4 +129,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   );
 }
+
 
