@@ -1,6 +1,4 @@
-
-
-"use client"
+"use client";
 
 import {
   ColumnDef,
@@ -12,7 +10,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -21,28 +19,41 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import React from "react"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import React from "react";
+import { useRouter } from "next/navigation";
 
 // Ensure TData includes an `id` field
-interface DataTableProps<TData extends { id: string }, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps<
+  TData extends {
+    id: string;
+    baptism?: string;
+    communion?: string;
+    kumpil?: string;
+  },
+  TValue
+> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
-export function DataTable<TData extends { id: string }, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const router = useRouter()
+export function DataTable<
+  TData extends {
+    id: string;
+    baptism?: string;
+    communion?: string;
+    kumpil?: string;
+  },
+  TValue
+>({ columns, data }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
 
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
 
   const table = useReactTable({
     data,
@@ -57,14 +68,29 @@ export function DataTable<TData extends { id: string }, TValue>({
       sorting,
       columnFilters,
     },
-  })
+  });
+
+  // Calculate totals based on filtered data (displayed rows)
+  const rows = table.getFilteredRowModel().rows;
+
+  const totalNoBaptism = rows.filter(
+    (row) => row.original.baptism === "No"
+  ).length;
+  const totalNoCommunion = rows.filter(
+    (row) => row.original.communion === "No"
+  ).length;
+  const totalNoKumpil = rows.filter(
+    (row) => row.original.kumpil === "No"
+  ).length;
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-center py-4 gap-6">
         <Input
           placeholder="Filter Last Name..."
-          value={(table.getColumn("lastName")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("lastName")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("lastName")?.setFilterValue(event.target.value)
           }
@@ -76,10 +102,14 @@ export function DataTable<TData extends { id: string }, TValue>({
           <select
             id="baptism"
             name="baptism"
-            value={(table.getColumn("baptism")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("baptism")?.getFilterValue() as string) ?? "All"
+            }
             onChange={(event) => {
-              const value = event.target.value
-              table.getColumn("baptism")?.setFilterValue(value === "All" ? undefined : value)
+              const value = event.target.value;
+              table
+                .getColumn("baptism")
+                ?.setFilterValue(value === "All" ? undefined : value);
             }}
             className="border border-gray-300 dark:border-gray-600 rounded-md p-2 text-sm dark:text-white"
           >
@@ -90,14 +120,19 @@ export function DataTable<TData extends { id: string }, TValue>({
         </div>
 
         <div className="flex items-center justify-between gap-2">
-          <p>First Communion</p>
+          <p >First Communion</p>
           <select
             id="communion"
             name="communion"
-            value={(table.getColumn("communion")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("communion")?.getFilterValue() as string) ??
+              "All"
+            }
             onChange={(event) => {
-              const value = event.target.value
-              table.getColumn("communion")?.setFilterValue(value === "All" ? undefined : value)
+              const value = event.target.value;
+              table
+                .getColumn("communion")
+                ?.setFilterValue(value === "All" ? undefined : value);
             }}
             className="border border-gray-300 dark:border-gray-600 rounded-md p-2 text-sm dark:text-white"
           >
@@ -112,10 +147,14 @@ export function DataTable<TData extends { id: string }, TValue>({
           <select
             id="kumpil"
             name="kumpil"
-            value={(table.getColumn("kumpil")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("kumpil")?.getFilterValue() as string) ?? "All"
+            }
             onChange={(event) => {
-              const value = event.target.value
-              table.getColumn("kumpil")?.setFilterValue(value === "All" ? undefined : value)
+              const value = event.target.value;
+              table
+                .getColumn("kumpil")
+                ?.setFilterValue(value === "All" ? undefined : value);
             }}
             className="border border-gray-300 dark:border-gray-600 rounded-md p-2 text-sm dark:text-white"
           >
@@ -123,6 +162,11 @@ export function DataTable<TData extends { id: string }, TValue>({
             <option value="Yes">Yes</option>
             <option value="No">No</option>
           </select>
+        </div>
+        <div className="flex flex-col items-center sm:flex-row justify-between w-[400px]">
+          <h1 className="text-sm">No Baptism: {totalNoBaptism}</h1>
+          <h1 className="text-sm">No First Comm: {totalNoCommunion}</h1>
+          <h1 className="text-sm">No Kumpil: {totalNoKumpil}</h1>
         </div>
       </div>
 
@@ -135,7 +179,10 @@ export function DataTable<TData extends { id: string }, TValue>({
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -153,14 +200,20 @@ export function DataTable<TData extends { id: string }, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -188,6 +241,5 @@ export function DataTable<TData extends { id: string }, TValue>({
         </Button>
       </div>
     </div>
-  )
+  );
 }
-
