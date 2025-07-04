@@ -24,6 +24,7 @@ const data = {
   navMain: [
     { title: "Dashboard", url: "/dashboard" },
     { title: "Members", url: "/members" },
+    { title: "Schedule", url: "/schedule" },
     {
       title: "Attendance",
       url: "/attendance",
@@ -42,7 +43,7 @@ type User = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [,setUser] = useState<User | null>(null);
+  const [, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -87,11 +88,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 height={100}
                 priority
               />
-              <h1 className="font-semibold mt-2">
-               ADMIN
-              </h1>
+              <h1 className="font-semibold mt-2">ADMIN</h1>
               <h4 className="text-sm">Commission for Altar Server</h4>
-
             </div>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -124,10 +122,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-<Logout/>
+      <Logout />
       <SidebarRail />
     </Sidebar>
   );
 }
-
-
