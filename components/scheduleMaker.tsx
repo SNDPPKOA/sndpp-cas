@@ -540,7 +540,7 @@ export default function ScheduleMaker() {
                 key={key}
                 className="p-4 mb-4 bg-white h-[320px] overflow-y-auto space-y-2 pr-2 dark:bg-gray-800 dark:border-gray-700 w-full"
               >
-                <CardTitle className="mb-2 text-black dark:text-white">
+                <CardTitle className="mb-2 text-sm sm:text-base md:text-lg lg:text-xl text-black dark:text-white">
                   {key === "anticipated"
                     ? "Anticipated Mass"
                     : key === "firstMass"
@@ -557,7 +557,7 @@ export default function ScheduleMaker() {
                     ? "Sixth Mass (5:30 P.M.)"
                     : "Seventh Mass (7 P.M.)"}
 
-                  <p className="text-lg text-gray-600 dark:text-gray-300">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300">
                     Total: {schedule[key].length}
                   </p>
                 </CardTitle>
