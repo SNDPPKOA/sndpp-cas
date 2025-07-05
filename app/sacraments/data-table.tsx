@@ -87,12 +87,12 @@ export function DataTable<
     <div>
       <div className="flex flex-col sm:flex-row items-center py-4 gap-6">
         <Input
-          placeholder="Filter Last Name..."
+          placeholder="Filter First Name"
           value={
-            (table.getColumn("lastName")?.getFilterValue() as string) ?? ""
+            (table.getColumn("firstName")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("lastName")?.setFilterValue(event.target.value)
+            table.getColumn("firstName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

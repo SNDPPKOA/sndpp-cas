@@ -79,6 +79,18 @@ const ageFilterFn: FilterFn<People> = (row, columnId, filterValue) => {
 
 export const columns: ColumnDef<People>[] = [
   {
+    accessorKey: "firstName",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        First Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
     accessorKey: "lastName",
     header: ({ column }) => (
       <Button
@@ -89,10 +101,6 @@ export const columns: ColumnDef<People>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-  },
-  {
-    accessorKey: "firstName",
-    header: "First Name",
   },
   {
     accessorKey: "memberStatus",

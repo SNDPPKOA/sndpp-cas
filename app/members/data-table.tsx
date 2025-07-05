@@ -246,12 +246,12 @@ export function DataTable<TData extends { id: string; age: string }, TValue>({
       <div className="flex flex-col sm:flex-row items-center py-4 gap-6">
         {/* Last Name Filter */}
         <Input
-          placeholder="Filter Last Name..."
+          placeholder="Search First Name"
           value={
-            (table.getColumn("lastName")?.getFilterValue() as string) ?? ""
+            (table.getColumn("firstName")?.getFilterValue() as string) ?? ""
           }
           onChange={(e) =>
-            table.getColumn("lastName")?.setFilterValue(e.target.value)
+            table.getColumn("firstName")?.setFilterValue(e.target.value)
           }
           className="max-w-sm"
         />
