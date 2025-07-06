@@ -520,6 +520,7 @@ export function DataTable<
           Next
         </Button>
       </div>
+      
     </div>
   );
 }
