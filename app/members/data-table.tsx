@@ -233,12 +233,12 @@ export function DataTable<TData extends { id: string; age: string }, TValue>({
   // Compute totals (based on original data)
   const totalCM = data.filter((d) => {
     const age = Number(d.age);
-    return !isNaN(age) && age <= 13;
+    return !isNaN(age) && age <= 14;
   }).length;
 
   const totalYouth = data.filter((d) => {
     const age = Number(d.age);
-    return !isNaN(age) && age >= 14;
+    return !isNaN(age) && age >= 15;
   }).length;
 
   return (
