@@ -539,6 +539,7 @@ export function SignUpForm2({
             className="border border-gray-300 dark:border-gray-600 rounded-md p-2 text-sm  dark:text-white"
           >
             <option value="">-- Choose Status --</option>
+            <option value="New Member">New Member</option>
             <option value="Aspirant">Aspirant</option>
             <option value="Neophytes">Neophytes</option>
             <option value="Junior">Junior</option>
