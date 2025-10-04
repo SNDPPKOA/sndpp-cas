@@ -295,6 +295,7 @@
 //     </div>
 //   );
 // }
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -308,6 +309,7 @@ import {
 } from "@hello-pangea/dnd";
 
 import { Card, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
 
 interface Member {
   id: string;
@@ -407,12 +409,41 @@ export default function ScheduleMaker() {
       )
     );
 
+  // Inside your component
+  const handleReset = async () => {
+    // Combine all currently scheduled members
+    const allScheduled = Object.values(schedule).flat();
+
+    // Return them to members + keep the unassigned ones
+    setMembers([...members, ...allScheduled]);
+
+    // Clear the schedule
+    const emptySchedule: { [key: string]: Member[] } = {
+      anticipated: [],
+      firstMass: [],
+      secondMass: [],
+      thirdMass: [],
+      fourthMass: [],
+      fifthMass: [],
+      sixthMass: [],
+      seventhMass: [],
+    };
+
+    setSchedule(emptySchedule);
+    setScheduledIds(new Set());
+
+    // Save the cleared schedule to Firestore
+    await saveScheduleToFirestore(emptySchedule);
+  };
+
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
 
     const sourceList = source.droppableId;
     const destList = destination.droppableId;
+    const [previousSchedule, setPreviousSchedule] = useState<{ [key: string]: Member[] } | null>(null);
+
 
     const sourceItems =
       sourceList === "members"
@@ -532,6 +563,9 @@ export default function ScheduleMaker() {
             <h2 className="text-xl font-bold text-black dark:text-white">
               Mass Schedule
             </h2>
+            <Button onClick={handleReset} variant="destructive">
+              Reset
+            </Button>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
