@@ -257,12 +257,13 @@ export function LoginForm({
           setShowModal(true);
         }
       } else {
-        setModalMessage("Wrong username or password.");
+        setModalMessage("Gagi mali, Bawi ka na lang next life");
         setShowModal(true);
       }
     } catch (err) {
       console.error("Login error:", err);
-      setModalMessage("Something went wrong. Please try again.");
+      //  setModalMessage("Something went wrong. Please try again. ");
+      setModalMessage("Gagi mali, Bawi ka na lang next life ");
       setShowModal(true);
     } finally {
       setLoading(false);
