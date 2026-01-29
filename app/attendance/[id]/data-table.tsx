@@ -249,6 +249,7 @@
 //     </div>
 //   )
 // }
+
 "use client";
 
 import {
@@ -276,7 +277,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { doc, updateDoc, deleteField } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-
+import { Check, X, MousePointerClick, CircleMinus } from "lucide-react";
 
 // Fix: Use native input or ensure correct component export
 const TextInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
@@ -285,7 +286,7 @@ const TextInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
 
 interface DataTableProps<
   TData extends { id: string; firstName: string; lastName: string },
-  TValue
+  TValue,
 > {
   data: TData[];
   columns: ColumnDef<TData, TValue>[];
@@ -298,7 +299,7 @@ interface DataTableProps<
 
 export function DataTable<
   TData extends { id: string; firstName: string; lastName: string },
-  TValue
+  TValue,
 >({
   columns,
   data,
@@ -310,7 +311,7 @@ export function DataTable<
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
 
   const table = useReactTable({
@@ -334,7 +335,7 @@ export function DataTable<
     rowId: string,
     scheduleId: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ) => {
     setAttendanceStates((prev) => {
       const currentIndex = prev[rowId] ?? 0;
@@ -368,6 +369,19 @@ export function DataTable<
 
       return newState;
     });
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "Present":
+        return <Check className="w-5 h-5" />;
+      case "Absent":
+        return <X className="w-5 h-5" />;
+      case "Excuse":
+        return <CircleMinus className="w-5 h-5" />;
+      default:
+        return <MousePointerClick className="w-5 h-5" />;
+    }
   };
 
   const getColorClasses = (status: string) => {
@@ -429,6 +443,14 @@ export function DataTable<
             Summary
           </Button>
         )}
+
+        <Button
+          onClick={() =>
+            router.push(`/MassAttendance?scheduleId=${scheduleId}`)
+          }
+        >
+          Mass Attendance
+        </Button>
       </div>
 
       <div className="rounded-md border">
@@ -442,7 +464,7 @@ export function DataTable<
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -464,7 +486,7 @@ export function DataTable<
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -476,14 +498,15 @@ export function DataTable<
                             row.original.id,
                             scheduleId,
                             row.original.firstName,
-                            row.original.lastName
+                            row.original.lastName,
                           )
                         }
-                        className={`rounded-md px-4 py-2 text-sm font-medium ${getColorClasses(
-                          currentStatus
+                        className={`flex items-center justify-center rounded-md px-4 py-2 ${getColorClasses(
+                          currentStatus,
                         )}`}
+                        title={currentStatus} // tooltip on hover
                       >
-                        {currentStatus}
+                        {getStatusIcon(currentStatus)}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -520,7 +543,6 @@ export function DataTable<
           Next
         </Button>
       </div>
-      
     </div>
   );
 }
