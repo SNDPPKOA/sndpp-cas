@@ -1,5 +1,6 @@
 "use client";
 
+
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -19,6 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +35,7 @@ interface DataTableProps<
     communion?: string;
     kumpil?: string;
   },
-  TValue
+  TValue,
 > {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -46,13 +48,13 @@ export function DataTable<
     communion?: string;
     kumpil?: string;
   },
-  TValue
+  TValue,
 >({ columns, data }: DataTableProps<TData, TValue>) {
   const router = useRouter();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
 
   const table = useReactTable({
@@ -74,17 +76,19 @@ export function DataTable<
   const rows = table.getFilteredRowModel().rows;
 
   const totalNoBaptism = rows.filter(
-    (row) => row.original.baptism === "No"
+    (row) => row.original.baptism === "No",
   ).length;
   const totalNoCommunion = rows.filter(
-    (row) => row.original.communion === "No"
+    (row) => row.original.communion === "No",
   ).length;
   const totalNoKumpil = rows.filter(
-    (row) => row.original.kumpil === "No"
+    (row) => row.original.kumpil === "No",
   ).length;
 
   return (
     <div>
+
+
       <div className="flex flex-col sm:flex-row items-center py-4 gap-6">
         <Input
           placeholder="Filter First Name"
@@ -120,7 +124,7 @@ export function DataTable<
         </div>
 
         <div className="flex items-center justify-between gap-2">
-          <p >First Communion</p>
+          <p>First Communion</p>
           <select
             id="communion"
             name="communion"
@@ -181,7 +185,7 @@ export function DataTable<
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -202,7 +206,7 @@ export function DataTable<
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -243,3 +247,7 @@ export function DataTable<
     </div>
   );
 }
+
+
+
+

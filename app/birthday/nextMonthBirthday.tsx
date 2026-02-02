@@ -172,6 +172,7 @@ export default function NextMonthBirthday() {
 
   return (
     <>
+    
       <h2 className="text-2xl font-bold mb-4">
         🎉 {monthName} Birthday Celebrants
       </h2>

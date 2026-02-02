@@ -1,15 +1,16 @@
 import DataPeople from "./dataBirthday";
 import NextMonthBirthday from "./nextMonthBirthday";
+import DownloadBirthdayFile from "./DownloadBirthdayFile";
 export const runtime = "edge";
 export default async function Birthday() {
-
   return (
     <div className="container mx-auto py-10">
-      <DataPeople/>
-      <NextMonthBirthday/>
+      <div className="flex justify-end">
+        <DownloadBirthdayFile />
+      </div>
+
+      <DataPeople />
+      <NextMonthBirthday />
     </div>
-  )
+  );
 }
-
-
-

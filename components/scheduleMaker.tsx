@@ -366,7 +366,7 @@ import {
 } from "docx";
 import { saveAs } from "file-saver";
 
-
+import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, doc, setDoc, onSnapshot } from "firebase/firestore";
@@ -405,192 +405,188 @@ export default function ScheduleMaker() {
     seventhMass: [],
   });
 
-
-const downloadScheduleDocx = async () => {
-  const createTable = (title: string, data: Member[]) =>
-    new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      rows: [
-        ...(title
-          ? [
-              new TableRow({
-                children: [
-                  new TableCell({
-                    columnSpan: 2,
-                    shading: {
-                      type: ShadingType.CLEAR,
-                      fill: "003366",
-                    },
-                    margins: { top: 120, bottom: 120, left: 120, right: 120 },
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: title,
-                            bold: true,
-                            color: "FFFFFF",
-                            size: 26,
-                          }),
-                        ],
-                        alignment: AlignmentType.CENTER,
-                        spacing: { before: 0, after: 0 },
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ]
-          : []),
-
-        new TableRow({
-          children: [
-            new TableCell({
-              width: { size: 8, type: WidthType.PERCENTAGE },
-              shading: {
-                type: ShadingType.CLEAR,
-                fill: "E8F0F7",
-              },
-              children: [
-                new Paragraph({
-                  children: [new TextRun({ text: "#", bold: true })],
-                  alignment: AlignmentType.CENTER,
-                }),
-              ],
-            }),
-            new TableCell({
-              width: { size: 92, type: WidthType.PERCENTAGE },
-              shading: {
-                type: ShadingType.CLEAR,
-                fill: "E8F0F7",
-              },
-              children: [
-                new Paragraph({
-                  children: [new TextRun({ text: "Name", bold: true })],
-                }),
-              ],
-            }),
-          ],
-        }),
-
-        ...(data.length
-          ? data.map(
-              (m, i) =>
+  const downloadScheduleDocx = async () => {
+    const createTable = (title: string, data: Member[]) =>
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          ...(title
+            ? [
                 new TableRow({
                   children: [
                     new TableCell({
+                      columnSpan: 2,
                       shading: {
                         type: ShadingType.CLEAR,
-                        fill: i % 2 === 0 ? "F5F5F5" : "FFFFFF",
+                        fill: "003366",
+                      },
+                      margins: { top: 120, bottom: 120, left: 120, right: 120 },
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: title,
+                              bold: true,
+                              color: "FFFFFF",
+                              size: 26,
+                            }),
+                          ],
+                          alignment: AlignmentType.CENTER,
+                          spacing: { before: 0, after: 0 },
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ]
+            : []),
+
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 8, type: WidthType.PERCENTAGE },
+                shading: {
+                  type: ShadingType.CLEAR,
+                  fill: "E8F0F7",
+                },
+                children: [
+                  new Paragraph({
+                    children: [new TextRun({ text: "#", bold: true })],
+                    alignment: AlignmentType.CENTER,
+                  }),
+                ],
+              }),
+              new TableCell({
+                width: { size: 92, type: WidthType.PERCENTAGE },
+                shading: {
+                  type: ShadingType.CLEAR,
+                  fill: "E8F0F7",
+                },
+                children: [
+                  new Paragraph({
+                    children: [new TextRun({ text: "Name", bold: true })],
+                  }),
+                ],
+              }),
+            ],
+          }),
+
+          ...(data.length
+            ? data.map(
+                (m, i) =>
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        shading: {
+                          type: ShadingType.CLEAR,
+                          fill: i % 2 === 0 ? "F5F5F5" : "FFFFFF",
+                        },
+                        children: [
+                          new Paragraph({
+                            text: `${i + 1}`,
+                            alignment: AlignmentType.CENTER,
+                          }),
+                        ],
+                      }),
+                      new TableCell({
+                        shading: {
+                          type: ShadingType.CLEAR,
+                          fill: i % 2 === 0 ? "F5F5F5" : "FFFFFF",
+                        },
+                        children: [
+                          new Paragraph(`${m.firstName} ${m.lastName}`),
+                        ],
+                      }),
+                    ],
+                  }),
+              )
+            : [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      columnSpan: 2,
+                      shading: {
+                        type: ShadingType.CLEAR,
+                        fill: "F5F5F5",
                       },
                       children: [
                         new Paragraph({
-                          text: `${i + 1}`,
+                          text: "No members assigned",
                           alignment: AlignmentType.CENTER,
                         }),
                       ],
                     }),
-                    new TableCell({
-                      shading: {
-                        type: ShadingType.CLEAR,
-                        fill: i % 2 === 0 ? "F5F5F5" : "FFFFFF",
-                      },
-                      children: [
-                        new Paragraph(
-                          `${m.firstName} ${m.lastName}`
-                        ),
-                      ],
-                    }),
                   ],
-                })
-            )
-          : [
-              new TableRow({
-                children: [
-                  new TableCell({
-                    columnSpan: 2,
-                    shading: {
-                      type: ShadingType.CLEAR,
-                      fill: "F5F5F5",
-                    },
-                    children: [
-                      new Paragraph({
-                        text: "No members assigned",
-                        alignment: AlignmentType.CENTER,
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ]),
+                }),
+              ]),
+        ],
+      });
+
+    const rows: TableRow[] = [];
+    const entries = Object.entries(schedule);
+
+    for (let i = 0; i < entries.length; i += 2) {
+      const [k1, d1] = entries[i];
+      const [k2, d2] = entries[i + 1] || [];
+
+      rows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 50, type: WidthType.PERCENTAGE },
+              borders: {
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
+              },
+              children: [createTable(MASS_LABELS[k1], d1)],
+            }),
+            new TableCell({
+              width: { size: 50, type: WidthType.PERCENTAGE },
+              borders: {
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
+              },
+              children: k2 ? [createTable(MASS_LABELS[k2], d2)] : [],
+            }),
+          ],
+        }),
+      );
+    }
+
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            new Paragraph({
+              text: "Mass Schedule Summary",
+              heading: HeadingLevel.TITLE,
+              alignment: AlignmentType.CENTER,
+            }),
+
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows,
+            }),
+
+            new Paragraph({
+              text: "Unassigned Members",
+              heading: HeadingLevel.HEADING_2,
+              spacing: { before: 400 },
+            }),
+
+            createTable("", members),
+          ],
+        },
       ],
     });
 
-  const rows: TableRow[] = [];
-  const entries = Object.entries(schedule);
-
-  for (let i = 0; i < entries.length; i += 2) {
-    const [k1, d1] = entries[i];
-    const [k2, d2] = entries[i + 1] || [];
-
-    rows.push(
-      new TableRow({
-        children: [
-          new TableCell({
-            width: { size: 50, type: WidthType.PERCENTAGE },
-            borders: {
-              top: { style: BorderStyle.NONE },
-              bottom: { style: BorderStyle.NONE },
-              left: { style: BorderStyle.NONE },
-              right: { style: BorderStyle.NONE },
-            },
-            children: [createTable(MASS_LABELS[k1], d1)],
-          }),
-          new TableCell({
-            width: { size: 50, type: WidthType.PERCENTAGE },
-            borders: {
-              top: { style: BorderStyle.NONE },
-              bottom: { style: BorderStyle.NONE },
-              left: { style: BorderStyle.NONE },
-              right: { style: BorderStyle.NONE },
-            },
-            children: k2 ? [createTable(MASS_LABELS[k2], d2)] : [],
-          }),
-        ],
-      })
-    );
-  }
-
-  const doc = new Document({
-    sections: [
-      {
-        children: [
-          new Paragraph({
-            text: "Mass Schedule Summary",
-            heading: HeadingLevel.TITLE,
-            alignment: AlignmentType.CENTER,
-          }),
-
-          new Table({
-            width: { size: 100, type: WidthType.PERCENTAGE },
-            rows,
-          }),
-
-          new Paragraph({
-            text: "Unassigned Members",
-            heading: HeadingLevel.HEADING_2,
-            spacing: { before: 400 },
-          }),
-
-          createTable("", members),
-        ],
-      },
-    ],
-  });
-
-  const blob = await Packer.toBlob(doc);
-  saveAs(blob, "CAS_Schedule.docx");
-};
-
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "CAS_Schedule.docx");
+  };
 
   const MASS_LABELS: Record<string, string> = {
     anticipated: "Anticipated Mass (6 P.M.)",
@@ -819,7 +815,13 @@ const downloadScheduleDocx = async () => {
             <h2 className="text-xl font-bold">Mass Schedule</h2>
 
             <div className="flex gap-2">
-              <Button onClick={downloadScheduleDocx}>Download DOCX</Button>
+              <button
+                onClick={downloadScheduleDocx}
+                className="flex items-center gap-2 px-4 py-2 rounded bg-primary text-primary-foreground hover:opacity-90 transition"
+              >
+                <Download className="w-4 h-4" />
+                Download File
+              </button>
 
               <Button onClick={handleReset} variant="destructive">
                 Reset

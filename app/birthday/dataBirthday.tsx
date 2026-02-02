@@ -160,6 +160,8 @@ export default function DataBirthday() {
 
   return (
     <>
+    
+
       <h2 className="text-2xl font-bold mb-4">
         🎉 {monthName} Birthday Celebrants
       </h2>
